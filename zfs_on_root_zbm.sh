@@ -34,6 +34,12 @@ if [[ ${RUN} =~ "false" ]]; then
 fi
 
 DISKID=/dev/disk/by-id/$(ls -al /dev/disk/by-id | grep ${DISK} | awk '{print $9}' | head -1)
+if [ "$DISKID" == "" ] || [ "$DISKID" == "=/dev/disk/by-id/" ]; then
+	DISKID="/dev/disk/by-path/$(ls -la /dev/disk/by-path | grep -E "${DISK}\$" | awk '{print $9}' | head -n1)"
+	if [ "$DISKID" == "" ] || [ "$DISKID" == "/dev/disk/by-path/" ]; then
+ 		exit 1
+	fi
+fi
 export DISKID
 DISK="/dev/${DISK}"
 export APT="/usr/bin/apt"
