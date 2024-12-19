@@ -5,16 +5,16 @@
 RUN="false"
 
 # Variables - Populate/tweak this before launching the script
-export DISTRO="desktop"           #server, desktop
-export RELEASE="mantic"           # The short name of the release as it appears in the repository (mantic, jammy, etc)
-export DISK="sda"                 # Enter the disk name only (sda, sdb, nvme1, etc)
-export PASSPHRASE="SomeRandomKey" # Encryption passphrase for "${POOLNAME}"
-export PASSWORD="mypassword"      # temporary root password & password for ${USERNAME}
-export HOSTNAME="myhost"          # hostname of the new machine
-export USERNAME="myuser"          # user to create in the new machine
+export DISTRO="server"           #server, desktop
+export RELEASE="noble"           # The short name of the release as it appears in the repository (mantic, jammy, etc)
+export DISK="vda"                 # Enter the disk name only (sda, sdb, nvme1, etc)
+export PASSPHRASE="" # Encryption passphrase for "${POOLNAME}"
+export PASSWORD="142536aa"      # temporary root password & password for ${USERNAME}
+export HOSTNAME="srv2.dorst.media"          # hostname of the new machine
+export USERNAME="patrick"          # user to create in the new machine
 export MOUNTPOINT="/mnt"          # debootstrap target location
-export LOCALE="en_US.UTF-8"       # New install language setting.
-export TIMEZONE="Europe/Rome"     # New install timezone setting.
+export LOCALE="de_DE.UTF-8"       # New install language setting.
+export TIMEZONE="Europe/Berlin"     # New install timezone setting.
 export RTL8821CE="false"          # Download and install RTL8821CE drivers as the default ones are faulty
 
 ## Auto-reboot at the end of installation? (true/false)
@@ -132,9 +132,6 @@ zfs_pool_create() {
     -O acltype=posixacl \
     -O xattr=sa \
     -O relatime=on \
-    -O encryption=aes-256-gcm \
-    -O keylocation=file:///etc/zfs/"${POOLNAME}".key \
-    -O keyformat=passphrase \
     -o autotrim=on \
     -o compatibility=openzfs-2.1-linux \
     -m none "${POOLNAME}" "$POOL_DEVICE"
@@ -217,7 +214,7 @@ EOF
   chroot "${MOUNTPOINT}" /bin/bash -x <<-EOCHROOT
   ${APT} update
   ${APT} upgrade -y
-  ${APT} install -y --no-install-recommends linux-generic locales keyboard-configuration console-setup curl nala git
+  ${APT} install -y --no-install-recommends linux-generic locales keyboard-configuration console-setup curl nala git nano
 EOCHROOT
 
   chroot "$MOUNTPOINT" /bin/bash -x <<-EOCHROOT
@@ -234,7 +231,7 @@ EOCHROOT
 
   # ZFS Configuration
   chroot "${MOUNTPOINT}" /bin/bash -x <<-EOCHROOT
-  ${APT} install -y dosfstools zfs-initramfs zfsutils-linux curl vim wget git
+  ${APT} install -y dosfstools zfs-initramfs zfsutils-linux curl vim wget git nano
   systemctl enable zfs.target
   systemctl enable zfs-import-cache
   systemctl enable zfs-mount
@@ -503,13 +500,13 @@ ZBM_install
 EFI_install
 rEFInd_install
 groups_and_networks
-create_user
+#create_user
 install_ubuntu
 uncompress_logs
 if [[ ${RTL8821CE} =~ "true" ]]; then
   rtl8821ce_install
 fi
-disable_root_login
+#disable_root_login
 cleanup
 
 if [[ ${REBOOT} =~ "true" ]]; then
