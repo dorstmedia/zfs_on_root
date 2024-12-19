@@ -2,7 +2,7 @@
 #
 ########################
 # Change ${RUN} to true to execute the script
-RUN="false"
+RUN="true"
 
 # Variables - Populate/tweak this before launching the script
 export DISTRO="server"           #server, desktop
@@ -22,7 +22,7 @@ REBOOT="false"
 
 ########################################################################
 #### Enable/disable debug. Only used during the development phase.
-DEBUG="false"
+DEBUG="true"
 ########################################################################
 ########################################################################
 ########################################################################
@@ -40,6 +40,11 @@ if [ "$DISKID" == "" ] || [ "$DISKID" == "=/dev/disk/by-id/" ]; then
  		exit 1
 	fi
 fi
+echo "DISK: ${DISK}"
+echo "DISKID: ${DISKID}"
+sleep 30s
+exit 0
+
 export DISKID
 DISK="/dev/${DISK}"
 export APT="/usr/bin/apt"
@@ -506,13 +511,13 @@ ZBM_install
 EFI_install
 rEFInd_install
 groups_and_networks
-#create_user
+create_user
 install_ubuntu
 uncompress_logs
 if [[ ${RTL8821CE} =~ "true" ]]; then
   rtl8821ce_install
 fi
-#disable_root_login
+disable_root_login
 cleanup
 
 if [[ ${REBOOT} =~ "true" ]]; then
